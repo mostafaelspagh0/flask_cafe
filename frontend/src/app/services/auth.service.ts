@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
-
+import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
 const JWTS_LOCAL_KEY = 'JWTS_LOCAL_KEY';
@@ -9,6 +9,7 @@ const JWTS_ACTIVE_INDEX_KEY = 'JWTS_ACTIVE_INDEX_KEY';
 @Injectable({
   providedIn: 'root'
 })
+@Injectable()
 export class AuthService {
   url = environment.auth0.url;
   audience = environment.auth0.audience;
@@ -18,7 +19,7 @@ export class AuthService {
   token: string;
   payload: any;
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
   build_login_link(callbackPath = '') {
     let link = 'https://';
@@ -30,7 +31,12 @@ export class AuthService {
     link += 'redirect_uri=' + this.callbackURL + callbackPath;
     return link;
   }
-
+  build_logout_link() {
+    let link = 'https://';
+    link += this.url + '.auth0.com';
+    link += '/logout';
+    return link;
+  }
   // invoked in app.component on load
   check_token_fragment() {
     // parse the fragment
@@ -71,6 +77,7 @@ export class AuthService {
   logout() {
     this.token = '';
     this.payload = null;
+    this.http.get(this.build_logout_link());
     this.set_jwt();
   }
 
