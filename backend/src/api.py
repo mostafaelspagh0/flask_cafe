@@ -29,6 +29,22 @@ CORS(app)
         or appropriate status code indicating reason for failure
 '''
 
+
+@app.route('/drinks', methods=['GET'])
+def get_drinks():
+    drinks = Drink.query.all()
+    try:
+        return jsonify({
+            "success": True,
+            "drinks": [drink.short() for drink in drinks]
+        }), 200
+    except Exception:
+        return jsonify({
+            "success": False,
+            "message": "An Error Occurred"
+        }), 500
+
+
 '''
 @TODO implement endpoint
     GET /drinks-detail
