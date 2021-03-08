@@ -120,5 +120,5 @@ def auth_error(error):
     return jsonify({
         "success": False,
         "error": error.status_code,
-        "error": error.error
+        "message": error.error
     }), error.status_code
