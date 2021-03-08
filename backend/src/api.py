@@ -62,8 +62,7 @@ def drinks_detail(payload):
 def create_drink(payload):
     data = dict(request.form or request.json or request.data)
     drink = Drink(title=data.get('title'),
-                  recipe=data.get('recipe'))
-    drink.recipe = json.dumps(drink.recipe[0])
+                  recipe=json.dumps(data.get('recipe')))
     try:
         drink.insert()
         return json.dumps({'success': True, 'drink': drink.long()}), 200
