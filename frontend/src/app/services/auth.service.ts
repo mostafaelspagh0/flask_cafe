@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
 const JWTS_LOCAL_KEY = 'JWTS_LOCAL_KEY';
@@ -9,7 +8,6 @@ const JWTS_ACTIVE_INDEX_KEY = 'JWTS_ACTIVE_INDEX_KEY';
 @Injectable({
   providedIn: 'root'
 })
-@Injectable()
 export class AuthService {
   url = environment.auth0.url;
   audience = environment.auth0.audience;
@@ -19,7 +17,7 @@ export class AuthService {
   token: string;
   payload: any;
 
-  constructor(private http: HttpClient) { }
+  constructor() { }
 
   build_login_link(callbackPath = '') {
     let link = 'https://';
@@ -34,7 +32,13 @@ export class AuthService {
   build_logout_link() {
     let link = 'https://';
     link += this.url + '.auth0.com';
+    link += '/v2';
     link += '/logout';
+    link += '?';
+    link += 'returnTo=';
+    link += 'http%3A%2F%2Flocalhost%3A4200%2Ftabs%2Fuser-page&';
+    link += 'client_id=';
+    link += environment.auth0.clientId;
     return link;
   }
   // invoked in app.component on load
@@ -77,8 +81,8 @@ export class AuthService {
   logout() {
     this.token = '';
     this.payload = null;
-    this.http.get(this.build_logout_link());
     this.set_jwt();
+    window.location.href = this.build_logout_link();
   }
 
   can(permission: string) {
