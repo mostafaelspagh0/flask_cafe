@@ -43,7 +43,7 @@ def drinks_controller(app):
                       recipe=json.dumps(data.get('recipe')))
         try:
             drink.insert()
-            return json.dumps({'success': True, 'drink': drink.long()}), 200
+            return json.dumps({'success': True, 'drink': drink.long()}), 201
         except Exception:
             return json.dumps({
                 'success': False,
@@ -52,16 +52,15 @@ def drinks_controller(app):
 
     @app.route('/drinks/<id>', methods=['PATCH'])
     @requires_auth('patch:drinks')
-    def patch_drinks(f, id):
+    def patch_drinks(payload, id):
         try:
             data = dict(request.form or request.json or request.data)
-            drink = drink = Drink.query.filter(Drink.id == id).one_or_none()
-            if drink:
-                drink.title = data.get('title') if data.get(
-                    'title') else drink.title
-                recipe = data.get('recipe') if data.get('recipe') else drink.recipe
-                drink.recipe = recipe if type(recipe) == str else json.dumps(
-                    recipe)
+            drink = Drink.query.filter(Drink.id == id).one_or_none()
+            if drink is not None:
+                if data.get('title'):
+                    drink.title = data.get('title')
+                if data.get('recipe'):
+                    drink.recipe = json.dumps(data.get('recipe'))
                 drink.update()
                 return json.dumps({'success': True, 'drinks': [drink.long()]}), 200
             else:
@@ -69,7 +68,7 @@ def drinks_controller(app):
                     'success':
                         False,
                     'error':
-                        'Drink #' + id + ' not found to be edited'
+                        'Drink not found to be edited'
                 }), 404
         except Exception:
             return json.dumps({
@@ -79,10 +78,10 @@ def drinks_controller(app):
 
     @app.route('/drinks/<id>', methods=['DELETE'])
     @requires_auth('patch:drinks')
-    def delete_drinks(f, id):
+    def delete_drinks(payload, id):
         try:
             drink = Drink.query.filter(Drink.id == id).one_or_none()
-            if drink:
+            if drink is not None:
                 drink.delete()
                 return json.dumps({'success': True, 'drink': id}), 200
             else:
@@ -90,7 +89,7 @@ def drinks_controller(app):
                     'success':
                         False,
                     'error':
-                        'Drink #' + id + ' not found to be deleted'
+                        'Drink not found to be deleted'
                 }), 404
         except Exception:
             return json.dumps({
