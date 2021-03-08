@@ -2,7 +2,7 @@ import json
 
 from flask import jsonify, request
 
-from auth.auth import requires_auth
+from auth import requires_auth
 from models import Drink
 
 
