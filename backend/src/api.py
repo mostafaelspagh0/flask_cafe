@@ -1,6 +1,4 @@
-import os
-from flask import Flask, request, jsonify, abort
-from sqlalchemy import exc
+from flask import Flask, request, jsonify
 import json
 from flask_cors import CORS
 
@@ -12,33 +10,22 @@ app = Flask(__name__)
 setup_db(app)
 CORS(app)
 
-'''
-@TODO uncomment the following line to initialize the datbase
-!! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
-!! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
-'''
-
-
-# db_drop_and_create_all()
 
 ## ROUTES
 
 
 @app.route('/drinks', methods=['GET'])
 def get_drinks():
-    # try:
-    return jsonify({
-        "success": True,
-        "drinks": [drink.short() for drink in Drink.query.all()]
-    }), 200
-
-
-# except Exception:
-#     print(Exception.with_traceback())
-#     return jsonify({
-#         "success": False,
-#         "message": "An Error Occurred"
-#     }), 500
+    try:
+        return jsonify({
+            "success": True,
+            "drinks": [drink.short() for drink in Drink.query.all()]
+        }), 200
+    except Exception:
+        return jsonify({
+            "success": False,
+            "message": "An Error Occurred"
+        }), 500
 
 
 @app.route('/drinks-detail', methods=['GET'])
@@ -75,7 +62,7 @@ def create_drink(payload):
 
 @app.route('/drinks/<id>', methods=['PATCH'])
 @requires_auth('patch:drinks')
-def drinks(f, id):
+def patch_drinks(f, id):
     try:
         data = dict(request.form or request.json or request.data)
         drink = drink = Drink.query.filter(Drink.id == id).one_or_none()
@@ -105,7 +92,7 @@ def drinks(f, id):
 @requires_auth('patch:drinks')
 def patch_drinks(f, id):
     try:
-        drink = drink = Drink.query.filter(Drink.id == id).one_or_none()
+        drink = Drink.query.filter(Drink.id == id).one_or_none()
         if drink:
             drink.delete()
             return json.dumps({'success': True, 'drink': id}), 200
