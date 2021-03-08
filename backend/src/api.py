@@ -94,11 +94,8 @@ def drinks_detail(f):
         or appropriate status code indicating reason for failure
 '''
 
-## Error Handling
-'''
-Example error handling for unprocessable entity
-'''
 
+## Error Handling
 
 @app.errorhandler(422)
 def unprocessable(error):
@@ -109,25 +106,19 @@ def unprocessable(error):
     }), 422
 
 
-'''
-@TODO implement error handlers using the @app.errorhandler(error) decorator
-    each error handler should return (with approprate messages):
-             jsonify({
-                    "success": False, 
-                    "error": 404,
-                    "message": "resource not found"
-                    }), 404
-
-'''
-
-'''
-@TODO implement error handler for 404
-    error handler should conform to general task above 
-'''
+@app.errorhandler(404)
+def unprocessable(error):
+    return jsonify({
+        "success": False,
+        "error": 404,
+        "message": "resource not found"
+    }), 404
 
 
 @app.errorhandler(AuthError)
 def auth_error(error):
     return jsonify({
+        "success": False,
+        "error": error.status_code,
         "error": error.error
     }), error.status_code
