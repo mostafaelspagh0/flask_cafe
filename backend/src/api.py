@@ -38,9 +38,9 @@ def get_drinks():
         }), 500
 
 
-@app.route('/drinks-detail', methods=['GET'], endpoint='drinks_detail')
+@app.route('/drinks-detail', methods=['GET'])
 @requires_auth('get:drinks-detail')
-def drinks_detail(f):
+def drinks_detail(payload):
     try:
         return json.dumps({
             'success':
@@ -54,38 +54,71 @@ def drinks_detail(f):
         }), 500
 
 
-'''
-@TODO implement endpoint
-    POST /drinks
-        it should create a new row in the drinks table
-        it should require the 'post:drinks' permission
-        it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
-        or appropriate status code indicating reason for failure
-'''
+@app.route('/drinks', methods=['POST'])
+@requires_auth('post:drinks')
+def create_drink(payload):
+    data = dict(request.form or request.json or request.data)
+    drink = Drink(title=data.get('title'),
+                  recipe=data.get('recipe') if type(data.get('recipe')) == str
+                  else json.dumps(data.get('recipe')))
+    try:
+        drink.insert()
+        return json.dumps({'success': True, 'drink': drink.long()}), 200
+    except Exception:
+        return json.dumps({
+            'success': False,
+            'error': "An error occurred"
+        }), 500
 
-'''
-@TODO implement endpoint
-    PATCH /drinks/<id>
-        where <id> is the existing model id
-        it should respond with a 404 error if <id> is not found
-        it should update the corresponding row for <id>
-        it should require the 'patch:drinks' permission
-        it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
-        or appropriate status code indicating reason for failure
-'''
 
-'''
-@TODO implement endpoint
-    DELETE /drinks/<id>
-        where <id> is the existing model id
-        it should respond with a 404 error if <id> is not found
-        it should delete the corresponding row for <id>
-        it should require the 'delete:drinks' permission
-    returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
-        or appropriate status code indicating reason for failure
-'''
+@app.route('/drinks/<id>', methods=['PATCH'])
+@requires_auth('patch:drinks')
+def drinks(f, id):
+    try:
+        data = dict(request.form or request.json or request.data)
+        drink = drink = Drink.query.filter(Drink.id == id).one_or_none()
+        if drink:
+            drink.title = data.get('title') if data.get(
+                'title') else drink.title
+            recipe = data.get('recipe') if data.get('recipe') else drink.recipe
+            drink.recipe = recipe if type(recipe) == str else json.dumps(
+                recipe)
+            drink.update()
+            return json.dumps({'success': True, 'drinks': [drink.long()]}), 200
+        else:
+            return json.dumps({
+                'success':
+                    False,
+                'error':
+                    'Drink #' + id + ' not found to be edited'
+            }), 404
+    except Exception:
+        return json.dumps({
+            'success': False,
+            'error': "An error occurred"
+        }), 500
+
+
+@app.route('/drinks/<id>', methods=['DELETE'])
+@requires_auth('patch:drinks')
+def drinks(f, id):
+    try:
+        drink = drink = Drink.query.filter(Drink.id == id).one_or_none()
+        if drink:
+            drink.delete()
+            return json.dumps({'success': True, 'drink': id}), 200
+        else:
+            return json.dumps({
+                'success':
+                    False,
+                'error':
+                    'Drink #' + id + ' not found to be deleted'
+            }), 404
+    except Exception:
+        return json.dumps({
+            'success': False,
+            'error': "An error occurred"
+        }), 500
 
 
 ## Error Handling
