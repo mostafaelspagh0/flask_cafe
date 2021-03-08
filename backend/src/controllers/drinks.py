@@ -43,7 +43,7 @@ def drinks_controller(app):
                       recipe=json.dumps(data.get('recipe')))
         try:
             drink.insert()
-            return json.dumps({'success': True, 'drink': drink.long()}), 201
+            return json.dumps({'success': True, 'drink': drink.long()}), 200
         except Exception:
             return json.dumps({
                 'success': False,
