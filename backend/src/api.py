@@ -45,14 +45,21 @@ def get_drinks():
         }), 500
 
 
-'''
-@TODO implement endpoint
-    GET /drinks-detail
-        it should require the 'get:drinks-detail' permission
-        it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
-        or appropriate status code indicating reason for failure
-'''
+@app.route('/drinks-detail', methods=['GET'], endpoint='drinks_detail')
+@requires_auth('get:drinks-detail')
+def drinks_detail(f):
+    try:
+        return json.dumps({
+            'success':
+                True,
+            'drinks': [drink.long() for drink in Drink.query.all()]
+        }), 200
+    except Exception:
+        return json.dumps({
+            'success': False,
+            'error': "An error occurred"
+        }), 500
+
 
 '''
 @TODO implement endpoint
