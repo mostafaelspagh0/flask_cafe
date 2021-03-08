@@ -26,16 +26,19 @@ CORS(app)
 
 @app.route('/drinks', methods=['GET'])
 def get_drinks():
-    try:
-        return jsonify({
-            "success": True,
-            "drinks": [drink.short() for drink in Drink.query.all()]
-        }), 200
-    except Exception:
-        return jsonify({
-            "success": False,
-            "message": "An Error Occurred"
-        }), 500
+    # try:
+    return jsonify({
+        "success": True,
+        "drinks": [drink.short() for drink in Drink.query.all()]
+    }), 200
+
+
+# except Exception:
+#     print(Exception.with_traceback())
+#     return jsonify({
+#         "success": False,
+#         "message": "An Error Occurred"
+#     }), 500
 
 
 @app.route('/drinks-detail', methods=['GET'])
@@ -59,8 +62,8 @@ def drinks_detail(payload):
 def create_drink(payload):
     data = dict(request.form or request.json or request.data)
     drink = Drink(title=data.get('title'),
-                  recipe=data.get('recipe') if type(data.get('recipe')) == str
-                  else json.dumps(data.get('recipe')))
+                  recipe=data.get('recipe'))
+    drink.recipe = json.dumps(drink.recipe[0])
     try:
         drink.insert()
         return json.dumps({'success': True, 'drink': drink.long()}), 200
@@ -101,7 +104,7 @@ def drinks(f, id):
 
 @app.route('/drinks/<id>', methods=['DELETE'])
 @requires_auth('patch:drinks')
-def drinks(f, id):
+def patch_drinks(f, id):
     try:
         drink = drink = Drink.query.filter(Drink.id == id).one_or_none()
         if drink:
