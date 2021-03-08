@@ -118,7 +118,9 @@ def unprocessable(error):
     error handler should conform to general task above 
 '''
 
-'''
-@TODO implement error handler for AuthError
-    error handler should conform to general task above 
-'''
+
+@app.errorhandler(AuthError)
+def auth_error(error):
+    return jsonify({
+        "error": error.error
+    }), error.status_code
