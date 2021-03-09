@@ -36,7 +36,7 @@ export class AuthService {
     link += '/logout';
     link += '?';
     link += 'returnTo=';
-    link += 'http%3A%2F%2Flocalhost%3A4200%2Ftabs%2Fuser-page&';
+    link += 'http%3A%2F%2Flocalhost%3A8100%2Ftabs%2Fuser-page&';
     link += 'client_id=';
     link += environment.auth0.clientId;
     return link;

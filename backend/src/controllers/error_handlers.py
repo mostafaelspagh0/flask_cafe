@@ -1,5 +1,5 @@
 from flask import jsonify
-from auth import AuthError
+from ..auth import AuthError
 
 
 def error_handling(app):

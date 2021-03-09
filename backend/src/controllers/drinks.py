@@ -2,8 +2,8 @@ import json
 
 from flask import jsonify, request
 
-from auth import requires_auth
-from models import Drink
+from ..auth import requires_auth
+from ..models import Drink
 
 
 def drinks_controller(app):

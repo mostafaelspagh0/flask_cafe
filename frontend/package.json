@@ -31,7 +31,7 @@
     "node-sass": "^4.0.0",
     "rxjs": "~6.5.1",
     "tslib": "^1.9.0",
-    "zone.jsi": "~0.8.29"
+    "zone.js": "~0.8.29"
   },
   "devDependencies": {
     "@angular-devkit/architect": "~0.13.8",
